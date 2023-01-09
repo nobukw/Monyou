@@ -2618,33 +2618,16 @@ var _VirtualDom_attributeNS = F3(function(namespace, key, value)
 
 
 // XSS ATTACK VECTOR CHECKS
-//
-// For some reason, tabs can appear in href protocols and it still works.
-// So '\tjava\tSCRIPT:alert("!!!")' and 'javascript:alert("!!!")' are the same
-// in practice. That is why _VirtualDom_RE_js and _VirtualDom_RE_js_html look
-// so freaky.
-//
-// Pulling the regular expressions out to the top level gives a slight speed
-// boost in small benchmarks (4-10%) but hoisting values to reduce allocation
-// can be unpredictable in large programs where JIT may have a harder time with
-// functions are not fully self-contained. The benefit is more that the js and
-// js_html ones are so weird that I prefer to see them near each other.
-
-
-var _VirtualDom_RE_script = /^script$/i;
-var _VirtualDom_RE_on_formAction = /^(on|formAction$)/i;
-var _VirtualDom_RE_js = /^\s*j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:/i;
-var _VirtualDom_RE_js_html = /^\s*(j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:|d\s*a\s*t\s*a\s*:\s*t\s*e\s*x\s*t\s*\/\s*h\s*t\s*m\s*l\s*(,|;))/i;
 
 
 function _VirtualDom_noScript(tag)
 {
-	return _VirtualDom_RE_script.test(tag) ? 'p' : tag;
+	return tag == 'script' ? 'p' : tag;
 }
 
 function _VirtualDom_noOnOrFormAction(key)
 {
-	return _VirtualDom_RE_on_formAction.test(key) ? 'data-' + key : key;
+	return /^(on|formAction$)/i.test(key) ? 'data-' + key : key;
 }
 
 function _VirtualDom_noInnerHtmlOrFormAction(key)
@@ -2652,26 +2635,28 @@ function _VirtualDom_noInnerHtmlOrFormAction(key)
 	return key == 'innerHTML' || key == 'formAction' ? 'data-' + key : key;
 }
 
+function _VirtualDom_noJavaScriptUri_UNUSED(value)
+{
+	return /^javascript:/i.test(value.replace(/\s/g,'')) ? '' : value;
+}
+
 function _VirtualDom_noJavaScriptUri(value)
 {
-	return _VirtualDom_RE_js.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+	return /^javascript:/i.test(value.replace(/\s/g,''))
+		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
 		: value;
+}
+
+function _VirtualDom_noJavaScriptOrHtmlUri_UNUSED(value)
+{
+	return /^\s*(javascript:|data:text\/html)/i.test(value) ? '' : value;
 }
 
 function _VirtualDom_noJavaScriptOrHtmlUri(value)
 {
-	return _VirtualDom_RE_js_html.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+	return /^\s*(javascript:|data:text\/html)/i.test(value)
+		? 'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'
 		: value;
-}
-
-function _VirtualDom_noJavaScriptOrHtmlJson(value)
-{
-	return (typeof _Json_unwrap(value) === 'string' && _VirtualDom_RE_js_html.test(_Json_unwrap(value)))
-		? _Json_wrap(
-			/**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
-		) : value;
 }
 
 
@@ -7117,7 +7102,7 @@ var $elm$virtual_dom$VirtualDom$property = F2(
 		return A2(
 			_VirtualDom_property,
 			_VirtualDom_noInnerHtmlOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlJson(value));
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var $mdgriffith$elm_ui$Internal$Style$AllChildren = F2(
 	function (a, b) {
@@ -13181,17 +13166,18 @@ var $mdgriffith$elm_ui$Element$Border$width = function (v) {
 			v,
 			v));
 };
-var $author$project$Monyou$button = F2(
-	function (label, msg) {
+var $author$project$Monyou$button = F3(
+	function (label, msg, selected) {
 		return A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$padding(5),
-					$mdgriffith$elm_ui$Element$Background$color($author$project$Monyou$color.lightBlue),
+					$mdgriffith$elm_ui$Element$Background$color(
+					selected ? $author$project$Monyou$color.blue : $author$project$Monyou$color.lightBlue),
 					$mdgriffith$elm_ui$Element$Border$width(2),
 					$mdgriffith$elm_ui$Element$Border$rounded(6),
-					$mdgriffith$elm_ui$Element$Border$color($author$project$Monyou$color.blue),
+					$mdgriffith$elm_ui$Element$Border$color($author$project$Monyou$color.lightBlue),
 					$mdgriffith$elm_ui$Element$Border$shadow(
 					{
 						blur: 10,
@@ -13199,7 +13185,8 @@ var $author$project$Monyou$button = F2(
 						offset: _Utils_Tuple2(4, 4),
 						size: 3
 					}),
-					$mdgriffith$elm_ui$Element$Font$color($author$project$Monyou$color.blue),
+					$mdgriffith$elm_ui$Element$Font$color(
+					selected ? $author$project$Monyou$color.lightBlue : $author$project$Monyou$color.blue),
 					$mdgriffith$elm_ui$Element$Events$onClick(msg)
 				]),
 			{
@@ -13337,14 +13324,16 @@ var $author$project$Monyou$shapeIconView = F2(
 											]))));
 					}
 				}(),
-					A2(
+					A3(
 					$author$project$Monyou$button,
 					'🗑',
-					$author$project$Types$DeleteShape(idx)),
-					A2(
+					$author$project$Types$DeleteShape(idx),
+					false),
+					A3(
 					$author$project$Monyou$button,
 					'⬆',
-					$author$project$Types$MoveUp(idx))
+					$author$project$Types$MoveUp(idx),
+					false)
 				]));
 	});
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
@@ -13923,18 +13912,21 @@ var $author$project$Monyou$tools = function (model) {
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$text('紋様群'),
-							A2(
+							A3(
 							$author$project$Monyou$button,
 							'p6',
-							$author$project$Types$Crystal($author$project$Types$Rokkaku)),
-							A2(
+							$author$project$Types$Crystal($author$project$Types$Rokkaku),
+							_Utils_eq(model.monyou, $author$project$Types$Rokkaku)),
+							A3(
 							$author$project$Monyou$button,
 							'p6mm',
-							$author$project$Types$Crystal($author$project$Types$Asanoha)),
-							A2(
+							$author$project$Types$Crystal($author$project$Types$Asanoha),
+							_Utils_eq(model.monyou, $author$project$Types$Asanoha)),
+							A3(
 							$author$project$Monyou$button,
 							'p4mm',
-							$author$project$Types$Crystal($author$project$Types$Ichimatsu))
+							$author$project$Types$Crystal($author$project$Types$Ichimatsu),
+							_Utils_eq(model.monyou, $author$project$Types$Ichimatsu))
 						]))),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
@@ -13954,18 +13946,21 @@ var $author$project$Monyou$tools = function (model) {
 					_List_fromArray(
 						[
 							$mdgriffith$elm_ui$Element$text('モード'),
-							A2(
+							A3(
 							$author$project$Monyou$button,
 							'折れ線',
-							$author$project$Types$ModeSelected($author$project$Types$LineMode)),
-							A2(
+							$author$project$Types$ModeSelected($author$project$Types$LineMode),
+							_Utils_eq(model.editMode, $author$project$Types$LineMode)),
+							A3(
 							$author$project$Monyou$button,
 							'多角形',
-							$author$project$Types$ModeSelected($author$project$Types$PolygonMode)),
-							A2(
+							$author$project$Types$ModeSelected($author$project$Types$PolygonMode),
+							_Utils_eq(model.editMode, $author$project$Types$PolygonMode)),
+							A3(
 							$author$project$Monyou$button,
 							'円',
-							$author$project$Types$ModeSelected($author$project$Types$CircleMode))
+							$author$project$Types$ModeSelected($author$project$Types$CircleMode),
+							_Utils_eq(model.editMode, $author$project$Types$CircleMode))
 						]))),
 				A2(
 				$mdgriffith$elm_ui$Element$row,
@@ -14042,7 +14037,7 @@ var $author$project$Monyou$tools = function (model) {
 						_Utils_ap(
 							_List_fromArray(
 								[
-									A2($author$project$Monyou$button, '全消去', $author$project$Types$DeleteAll)
+									A3($author$project$Monyou$button, '全消去', $author$project$Types$DeleteAll, false)
 								]),
 							A2($elm$core$List$indexedMap, $author$project$Monyou$shapeIconView, model.shapes)))
 					]))

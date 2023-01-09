@@ -28,7 +28,7 @@
       const svgText = new XMLSerializer().serializeToString(image);
       const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
       const svgUrl = URL.createObjectURL(svgBlob);
-
+      
       const a = document.createElement('a');
       a.href = svgUrl;
       a.download = "image.svg";
@@ -37,7 +37,7 @@
       a.click();
 
       document.body.removeChild(a);
-      URL.revokeObjectURL(svgUrl);
+      URL.revokeObjectURL(svgUrl);  
   }
 
 const download = () => {
@@ -75,8 +75,8 @@ const download = () => {
       const svgData = new XMLSerializer().serializeToString(svg)
       // この時点で、上記のonloadが走る
       image.src = 'data:image/svg+xml;charset=utf-8;base64,' + btoa(unescape(encodeURIComponent(svgData)))
-}
-
+}  
+  
   const buttonArea = document.getElementById('buttonArea');
   const buttonPNG = document.createElement('button');
   buttonPNG.innerText = "png";
