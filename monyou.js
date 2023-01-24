@@ -4494,7 +4494,7 @@ var $avh4$elm_color$Color$rgb = F3(
 	});
 var $author$project$Monyou$init = {
 	editMode: $author$project$Types$CircleMode,
-	editorMargin: 10,
+	editorMargin: 65,
 	fillColor: A3($avh4$elm_color$Color$rgb, 255, 200, 200),
 	fillColorPicker: $simonh1000$elm_colorpicker$ColorPicker$empty,
 	lineColor: A3($avh4$elm_color$Color$rgb, 255, 0, 0),
@@ -6095,6 +6095,22 @@ var $author$project$Ichimatsu$fundPath = function (size) {
 			]),
 		_List_Nil);
 };
+var $author$project$P3$fundPath = function (size) {
+	return A2(
+		$elm$svg$Svg$path,
+		_List_fromArray(
+			[
+				$elm$svg$Svg$Attributes$d(
+				'M 0 0 l ' + ($elm$core$String$fromFloat(size / 2) + (' ' + ($elm$core$String$fromFloat(
+					($elm$core$Basics$sqrt(3) / 2) * size) + (' l ' + ($elm$core$String$fromFloat(size / 2) + (' ' + ($elm$core$String$fromFloat(
+					((-$elm$core$Basics$sqrt(3)) / 2) * size) + (' l ' + ($elm$core$String$fromFloat((-size) / 2) + (' ' + ($elm$core$String$fromFloat(
+					((-$elm$core$Basics$sqrt(3)) / 2) * size) + (' ' + (' l ' + ($elm$core$String$fromFloat((-size) / 2) + (' ' + ($elm$core$String$fromFloat(
+					($elm$core$Basics$sqrt(3) / 2) * size) + (' ' + ' z')))))))))))))))))),
+				$elm$svg$Svg$Attributes$stroke('red'),
+				$elm$svg$Svg$Attributes$fill('gray')
+			]),
+		_List_Nil);
+};
 var $author$project$Rokkaku$fundPath = function (size) {
 	return A2(
 		$elm$svg$Svg$path,
@@ -6380,10 +6396,10 @@ var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
 var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
 var $author$project$Editor$editor = function (model) {
 	var relativePos = function (event) {
-		return {x: (event.pointer.offsetPos.a - (4 * model.editorMargin)) / 4, y: (event.pointer.offsetPos.b - (4 * model.editorMargin)) / 4};
+		return {x: (event.pointer.offsetPos.a - (4 * 10)) / 4, y: (event.pointer.offsetPos.b - (4 * model.editorMargin)) / 4};
 	};
 	var mousePos = function (event) {
-		return {x: (event.offsetPos.a - (4 * model.editorMargin)) / 4, y: (event.offsetPos.b - (4 * model.editorMargin)) / 4};
+		return {x: (event.offsetPos.a - (4 * 10)) / 4, y: (event.offsetPos.b - (4 * model.editorMargin)) / 4};
 	};
 	var monyou = model.monyou;
 	return $mdgriffith$elm_ui$Element$html(
@@ -6412,7 +6428,8 @@ var $author$project$Editor$editor = function (model) {
 					$elm$svg$Svg$g,
 					_List_fromArray(
 						[
-							$elm$svg$Svg$Attributes$transform('scale(4,4) translate(10,10)')
+							$elm$svg$Svg$Attributes$transform(
+							'scale(4,4)translate(' + ('10' + (',' + ($elm$core$String$fromInt(model.editorMargin) + ')'))))
 						]),
 					_Utils_ap(
 						_List_fromArray(
@@ -6431,8 +6448,10 @@ var $author$project$Editor$editor = function (model) {
 												return $author$project$Asanoha$fundPath(model.unit);
 											case 'Ichimatsu':
 												return $author$project$Ichimatsu$fundPath(model.unit);
-											default:
+											case 'Rokkaku':
 												return $author$project$Rokkaku$fundPath(model.unit);
+											default:
+												return $author$project$P3$fundPath(model.unit);
 										}
 									}()
 									])),
@@ -6442,8 +6461,10 @@ var $author$project$Editor$editor = function (model) {
 									[
 										$elm$svg$Svg$Attributes$width('150'),
 										$elm$svg$Svg$Attributes$height('150'),
-										$elm$svg$Svg$Attributes$x('-10'),
-										$elm$svg$Svg$Attributes$y('-10'),
+										$elm$svg$Svg$Attributes$x(
+										$elm$core$String$fromInt(-10)),
+										$elm$svg$Svg$Attributes$y(
+										$elm$core$String$fromInt(-model.editorMargin)),
 										$elm$svg$Svg$Attributes$fill('#eee'),
 										$elm$svg$Svg$Attributes$stroke('black')
 									]),
@@ -6454,6 +6475,10 @@ var $author$project$Editor$editor = function (model) {
 									[
 										$elm$svg$Svg$Attributes$width('100%'),
 										$elm$svg$Svg$Attributes$height('100%'),
+										$elm$svg$Svg$Attributes$x(
+										$elm$core$String$fromInt(-10)),
+										$elm$svg$Svg$Attributes$y(
+										$elm$core$String$fromInt(-model.editorMargin)),
 										$elm$svg$Svg$Attributes$fill('white'),
 										$elm$svg$Svg$Attributes$clipPath('url(#cell0)')
 									]),
@@ -12721,6 +12746,107 @@ var $author$project$Ichimatsu$rhombi = function (model) {
 		},
 		A2($elm$core$List$range, 0, (n * n) - 1));
 };
+var $author$project$P3$fundD = F2(
+	function (id, model) {
+		return A2(
+			$elm$svg$Svg$g,
+			_List_Nil,
+			_Utils_ap(
+				_List_fromArray(
+					[
+						A2(
+						$elm$svg$Svg$clipPath,
+						_List_fromArray(
+							[
+								$elm$svg$Svg$Attributes$id('cell' + id)
+							]),
+						_List_fromArray(
+							[
+								$author$project$P3$fundPath(model.unit)
+							]))
+					]),
+				_Utils_ap(
+					_List_fromArray(
+						[
+							A2(
+							$elm$svg$Svg$clipPath,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$id('cell' + id)
+								]),
+							_List_fromArray(
+								[
+									$author$project$P3$fundPath(model.unit)
+								]))
+						]),
+					_Utils_ap(
+						A2(
+							$elm$core$List$map,
+							function (shape) {
+								return A3($author$project$PrimitivesView$shapeView, shape, id, model.unit);
+							},
+							model.shapes),
+						function () {
+							var _v0 = model.newShape;
+							if (_v0.$ === 'Just') {
+								var shape = _v0.a;
+								return _List_fromArray(
+									[
+										A3($author$project$PrimitivesView$shapeView, shape, id, model.unit)
+									]);
+							} else {
+								return _List_Nil;
+							}
+						}()))));
+	});
+var $author$project$P3$rhombus = F4(
+	function (model, s, t, unit) {
+		var prefix = $elm$core$String$fromInt(s) + ('-' + $elm$core$String$fromInt(t));
+		var oy = 0.5 * ((((unit * $elm$core$Basics$sqrt(3)) / 2) * (s - t)) + (unit * 18));
+		var ox = 0.5 * ((((unit * 3) / 2) * (s + t)) - (unit * 6));
+		return A2(
+			$elm$svg$Svg$g,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$transform(
+					'translate(' + ($elm$core$String$fromFloat(ox) + (',' + ($elm$core$String$fromFloat(oy) + ')'))))
+				]),
+			_List_fromArray(
+				[
+					A2($author$project$P3$fundD, prefix + 'a', model),
+					A2(
+					$elm$svg$Svg$g,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$transform('rotate(120)')
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$P3$fundD, prefix + 'b', model)
+						])),
+					A2(
+					$elm$svg$Svg$g,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$transform('rotate(240)')
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$P3$fundD, prefix + 'c', model)
+						]))
+				]));
+	});
+var $author$project$P3$rhombi = function (model) {
+	var n = 20;
+	return A2(
+		$elm$core$List$map,
+		function (i) {
+			var t = A2($elm$core$Basics$modBy, n, i);
+			var s = ((i / n) | 0) - ((n / 2) | 0);
+			return A4($author$project$P3$rhombus, model, s, t, model.unit);
+		},
+		A2($elm$core$List$range, 0, (n * n) - 1));
+};
 var $author$project$Rokkaku$fundD = F2(
 	function (id, model) {
 		return A2(
@@ -12894,8 +13020,10 @@ var $author$project$Monyou$screenSvg = function (model) {
 						return $author$project$Asanoha$rhombi(model);
 					case 'Ichimatsu':
 						return $author$project$Ichimatsu$rhombi(model);
-					default:
+					case 'Rokkaku':
 						return $author$project$Rokkaku$rhombi(model);
+					default:
+						return $author$project$P3$rhombi(model);
 				}
 			}()));
 };
@@ -12937,6 +13065,7 @@ var $author$project$Types$LineMode = {$: 'LineMode'};
 var $author$project$Types$ModeSelected = function (a) {
 	return {$: 'ModeSelected', a: a};
 };
+var $author$project$Types$P3 = {$: 'P3'};
 var $author$project$Types$PolygonMode = {$: 'PolygonMode'};
 var $author$project$Types$Rokkaku = {$: 'Rokkaku'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
@@ -13926,7 +14055,12 @@ var $author$project$Monyou$tools = function (model) {
 							$author$project$Monyou$button,
 							'p4mm',
 							$author$project$Types$Crystal($author$project$Types$Ichimatsu),
-							_Utils_eq(model.monyou, $author$project$Types$Ichimatsu))
+							_Utils_eq(model.monyou, $author$project$Types$Ichimatsu)),
+							A3(
+							$author$project$Monyou$button,
+							'p3',
+							$author$project$Types$Crystal($author$project$Types$P3),
+							_Utils_eq(model.monyou, $author$project$Types$P3))
 						]))),
 				A2(
 				$mdgriffith$elm_ui$Element$el,
